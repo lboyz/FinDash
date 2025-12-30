@@ -114,7 +114,7 @@ class TransactionController extends Controller
         $allTypes = $this->getEnumValues('transactions', 'type');
         
         // Define known income types to categorize
-        $knownIncomeTypes = ['Salary', 'Bonus', 'Freelance', 'Investment', 'Other Income', 'Gift', 'Gifts']; // Add more if needed
+        $knownIncomeTypes = ['Salary', 'Bonus', 'Freelance', 'Investment', 'Other Income']; // Add more if needed
         
         $transactionTypes = [
             'income' => [],
