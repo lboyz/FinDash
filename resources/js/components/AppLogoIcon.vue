@@ -19,7 +19,7 @@ const props = withDefaults(defineProps<Props>(), {
     src: '/FinDash.png',
     alt: 'FinDash Logo',
     width: 50,
-    height: 50
+    height: 50,
 });
 </script>
 
@@ -32,7 +32,7 @@ const props = withDefaults(defineProps<Props>(), {
         :height="height"
         :class="className"
         v-bind="$attrs"
-        style="display: inline-block;"
+        style="display: inline-block"
     />
     <svg
         v-else

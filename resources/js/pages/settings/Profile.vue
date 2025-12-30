@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { computed } from 'vue';
-import { Head, useForm, usePage } from '@inertiajs/vue3';
 import DeleteUser from '@/components/DeleteUser.vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import InputError from '@/components/InputError.vue';
@@ -11,7 +9,9 @@ import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
 import settingsRoutes from '@/routes/settings';
 import { type BreadcrumbItem } from '@/types';
+import { Head, useForm, usePage } from '@inertiajs/vue3';
 import { Trash2 } from 'lucide-vue-next';
+import { computed } from 'vue';
 
 interface User {
     id: number;
@@ -28,7 +28,6 @@ interface Props {
 }
 
 defineProps<Props>();
-
 
 const page = usePage();
 const user = computed(() => page.props.auth.user as unknown as User);
@@ -68,7 +67,7 @@ const removePhoto = () => {
 const getInitials = (name: string) => {
     return name
         .split(' ')
-        .map(n => n[0])
+        .map((n) => n[0])
         .join('')
         .toUpperCase()
         .slice(0, 2);
@@ -89,12 +88,12 @@ const getInitials = (name: string) => {
                 <form @submit.prevent="submit" class="space-y-6">
                     <!-- Profile Image -->
                     <div class="flex items-center gap-6">
-                        <div 
-                            class="h-24 w-24 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-2xl font-bold overflow-hidden"
+                        <div
+                            class="flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-primary text-2xl font-bold text-primary-foreground"
                         >
-                            <img 
-                                v-if="user.profile_image" 
-                                :src="`/storage/${user.profile_image}`" 
+                            <img
+                                v-if="user.profile_image"
+                                :src="`/storage/${user.profile_image}`"
                                 alt="Profile"
                                 class="h-full w-full rounded-full object-cover"
                             />
@@ -102,12 +101,16 @@ const getInitials = (name: string) => {
                         </div>
                         <div>
                             <Label for="profile_image">Profile Image</Label>
-                            <div class="flex items-center gap-2 mt-2">
+                            <div class="mt-2 flex items-center gap-2">
                                 <Input
                                     id="profile_image"
                                     type="file"
                                     accept="image/*"
-                                    @change="(e: any) => form.profile_image = e.target.files[0]"
+                                    @change="
+                                        (e: any) =>
+                                            (form.profile_image =
+                                                e.target.files[0])
+                                    "
                                     class="w-full"
                                 />
                                 <Button
@@ -115,17 +118,20 @@ const getInitials = (name: string) => {
                                     type="button"
                                     variant="outline"
                                     size="icon"
-                                    class="shrink-0 text-red-500 hover:text-red-600 hover:bg-red-500/10"
+                                    class="shrink-0 text-red-500 hover:bg-red-500/10 hover:text-red-600"
                                     @click="removePhoto"
                                     title="Remove photo"
                                 >
                                     <Trash2 class="h-4 w-4" />
                                 </Button>
                             </div>
-                            <p class="text-xs text-muted-foreground mt-1">
+                            <p class="mt-1 text-xs text-muted-foreground">
                                 Max 2MB. Formats: JPG, PNG
                             </p>
-                            <InputError :message="form.errors.profile_image" class="mt-1" />
+                            <InputError
+                                :message="form.errors.profile_image"
+                                class="mt-1"
+                            />
                         </div>
                     </div>
 
@@ -152,7 +158,10 @@ const getInitials = (name: string) => {
                             required
                             class="mt-1 block w-full"
                         />
-                        <InputError :message="form.errors.username" class="mt-1" />
+                        <InputError
+                            :message="form.errors.username"
+                            class="mt-1"
+                        />
                     </div>
 
                     <!-- Email -->
@@ -169,14 +178,11 @@ const getInitials = (name: string) => {
                     </div>
 
                     <div class="flex items-center gap-4">
-                        <Button
-                            :disabled="form.processing"
-                            type="submit"
-                        >
+                        <Button :disabled="form.processing" type="submit">
                             Save Changes
                         </Button>
 
-                         <Transition
+                        <Transition
                             enter-active-class="transition ease-in-out"
                             enter-from-class="opacity-0"
                             leave-active-class="transition ease-in-out"

@@ -2,8 +2,7 @@
 import InputError from '@/components/InputError.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
-import settingsRoutes from '@/routes/settings';
-import { Form, Head } from '@inertiajs/vue3';
+import { Head } from '@inertiajs/vue3';
 
 import HeadingSmall from '@/components/HeadingSmall.vue';
 import { Button } from '@/components/ui/button';
@@ -65,7 +64,9 @@ const submit = () => {
                             <Input
                                 id="current_password"
                                 v-model="form.current_password"
-                                :type="showCurrentPassword ? 'text' : 'password'"
+                                :type="
+                                    showCurrentPassword ? 'text' : 'password'
+                                "
                                 class="mt-1 block w-full pr-10"
                                 autocomplete="current-password"
                                 placeholder="Current password"
@@ -73,11 +74,16 @@ const submit = () => {
                             />
                             <button
                                 type="button"
-                                @click="showCurrentPassword = !showCurrentPassword"
-                                class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                @click="
+                                    showCurrentPassword = !showCurrentPassword
+                                "
+                                class="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                                 tabindex="-1"
                             >
-                                <Eye v-if="!showCurrentPassword" class="h-4 w-4" />
+                                <Eye
+                                    v-if="!showCurrentPassword"
+                                    class="h-4 w-4"
+                                />
                                 <EyeOff v-else class="h-4 w-4" />
                             </button>
                         </div>
@@ -96,10 +102,10 @@ const submit = () => {
                                 placeholder="New password"
                                 :disabled="form.processing"
                             />
-                             <button
+                            <button
                                 type="button"
                                 @click="showPassword = !showPassword"
-                                class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                class="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                                 tabindex="-1"
                             >
                                 <Eye v-if="!showPassword" class="h-4 w-4" />
@@ -107,18 +113,24 @@ const submit = () => {
                             </button>
                         </div>
                         <InputError :message="form.errors.password" />
-                        <p class="text-xs text-muted-foreground mt-1">
-                            Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one symbol.
+                        <p class="mt-1 text-xs text-muted-foreground">
+                            Password must be at least 8 characters long and
+                            contain at least one uppercase letter, one lowercase
+                            letter, one number, and one symbol.
                         </p>
                     </div>
 
                     <div class="grid gap-2">
-                        <Label for="password_confirmation">Confirm password</Label>
+                        <Label for="password_confirmation"
+                            >Confirm password</Label
+                        >
                         <div class="relative">
                             <Input
                                 id="password_confirmation"
                                 v-model="form.password_confirmation"
-                                :type="showConfirmPassword ? 'text' : 'password'"
+                                :type="
+                                    showConfirmPassword ? 'text' : 'password'
+                                "
                                 class="mt-1 block w-full pr-10"
                                 autocomplete="new-password"
                                 placeholder="Confirm password"
@@ -126,20 +138,27 @@ const submit = () => {
                             />
                             <button
                                 type="button"
-                                @click="showConfirmPassword = !showConfirmPassword"
-                                class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                                @click="
+                                    showConfirmPassword = !showConfirmPassword
+                                "
+                                class="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                                 tabindex="-1"
                             >
-                                <Eye v-if="!showConfirmPassword" class="h-4 w-4" />
+                                <Eye
+                                    v-if="!showConfirmPassword"
+                                    class="h-4 w-4"
+                                />
                                 <EyeOff v-else class="h-4 w-4" />
                             </button>
                         </div>
-                        <InputError :message="form.errors.password_confirmation" />
+                        <InputError
+                            :message="form.errors.password_confirmation"
+                        />
                     </div>
 
                     <div class="flex items-center gap-4">
-                        <Button 
-                            type="submit" 
+                        <Button
+                            type="submit"
                             :disabled="form.processing"
                             data-test="update-password-button"
                         >

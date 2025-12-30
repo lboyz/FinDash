@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthBase from '@/layouts/AuthLayout.vue';
-import { Head, useForm, router } from '@inertiajs/vue3';
+import { Head, router, useForm } from '@inertiajs/vue3';
+import { onMounted, onUnmounted, ref } from 'vue';
 
 const props = defineProps<{
     email: string;
@@ -37,14 +37,18 @@ const startTimer = () => {
 };
 
 const resendOTP = () => {
-    router.post('/resend-otp', {}, {
-        preserveScroll: true,
-        onSuccess: () => {
-            timeLeft.value = 600;
-            if (interval) clearInterval(interval);
-            startTimer();
+    router.post(
+        '/resend-otp',
+        {},
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                timeLeft.value = 600;
+                if (interval) clearInterval(interval);
+                startTimer();
+            },
         },
-    });
+    );
 };
 
 const submit = () => {
@@ -82,15 +86,21 @@ onUnmounted(() => {
                         :tabindex="1"
                         maxlength="6"
                         placeholder="000000"
-                        class="text-center text-2xl tracking-widest font-mono"
+                        class="text-center font-mono text-2xl tracking-widest"
                     />
                     <InputError :message="form.errors.otp" />
                 </div>
 
                 <div class="text-center text-sm">
-                    <p class="text-muted-foreground mb-2">
-                        Time remaining: 
-                        <span :class="timeLeft < 60 ? 'text-red-500 font-semibold' : 'font-semibold'">
+                    <p class="mb-2 text-muted-foreground">
+                        Time remaining:
+                        <span
+                            :class="
+                                timeLeft < 60
+                                    ? 'font-semibold text-red-500'
+                                    : 'font-semibold'
+                            "
+                        >
                             {{ formatTime(timeLeft) }}
                         </span>
                     </p>
@@ -119,12 +129,8 @@ onUnmounted(() => {
             </div>
 
             <div class="text-center text-xs text-muted-foreground">
-                <p>
-                    🔒 This is a security measure to protect your account.
-                </p>
-                <p class="mt-1">
-                    Never share your OTP code with anyone.
-                </p>
+                <p>🔒 This is a security measure to protect your account.</p>
+                <p class="mt-1">Never share your OTP code with anyone.</p>
             </div>
         </form>
     </AuthBase>

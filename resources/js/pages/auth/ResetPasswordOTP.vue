@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
 import InputError from '@/components/InputError.vue';
 import TextLink from '@/components/TextLink.vue';
 import { Button } from '@/components/ui/button';
@@ -7,7 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import AuthLayout from '@/layouts/AuthLayout.vue';
-import { Head, useForm, router } from '@inertiajs/vue3';
+import { Head, router, useForm } from '@inertiajs/vue3';
+import { onMounted, onUnmounted, ref } from 'vue';
 
 const props = defineProps<{
     email: string;
@@ -40,14 +40,18 @@ const startTimer = () => {
 };
 
 const resendOTP = () => {
-    router.post('/forgot-password', { email: props.email }, {
-        preserveScroll: true,
-        onSuccess: () => {
-            timeLeft.value = 600;
-            if (interval) clearInterval(interval);
-            startTimer();
+    router.post(
+        '/forgot-password',
+        { email: props.email },
+        {
+            preserveScroll: true,
+            onSuccess: () => {
+                timeLeft.value = 600;
+                if (interval) clearInterval(interval);
+                startTimer();
+            },
         },
-    });
+    );
 };
 
 const submit = () => {
@@ -78,8 +82,10 @@ onUnmounted(() => {
         </div>
 
         <form @submit.prevent="submit" class="space-y-6">
-            <div class="text-center text-sm text-muted-foreground mb-4">
-                <p>OTP code sent to: <strong>{{ email }}</strong></p>
+            <div class="mb-4 text-center text-sm text-muted-foreground">
+                <p>
+                    OTP code sent to: <strong>{{ email }}</strong>
+                </p>
             </div>
 
             <div class="grid gap-2">
@@ -92,15 +98,21 @@ onUnmounted(() => {
                     autofocus
                     maxlength="6"
                     placeholder="000000"
-                    class="text-center text-2xl tracking-widest font-mono"
+                    class="text-center font-mono text-2xl tracking-widest"
                 />
                 <InputError :message="form.errors.otp" />
             </div>
 
             <div class="text-center text-sm">
-                <p class="text-muted-foreground mb-2">
-                    Time remaining: 
-                    <span :class="timeLeft < 60 ? 'text-red-500 font-semibold' : 'font-semibold'">
+                <p class="mb-2 text-muted-foreground">
+                    Time remaining:
+                    <span
+                        :class="
+                            timeLeft < 60
+                                ? 'font-semibold text-red-500'
+                                : 'font-semibold'
+                        "
+                    >
                         {{ formatTime(timeLeft) }}
                     </span>
                 </p>

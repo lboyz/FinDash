@@ -1,39 +1,36 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import AppLayout from '@/layouts/AppLayout.vue';
-import { Head, router, useForm } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { 
-    Filter,
-    Download,
-    FileText,
-    FileSpreadsheet,
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { Head, router, useForm } from '@inertiajs/vue3';
+import {
+    ArrowDownLeft,
+    ArrowUpRight,
+    Calendar,
     ChevronLeft,
     ChevronRight,
-    Pencil,
-    Trash2,
-    ArrowUpRight,
-    ArrowDownLeft,
-    MoreVertical,
-    Calendar,
     CreditCard,
+    Download,
+    FileSpreadsheet,
+    FileText,
     FileType,
+    Filter,
+    Pencil,
     Search,
-    X,
-    TrendingUp,
+    Trash2,
     TrendingDown,
-    Wallet
+    TrendingUp,
+    Wallet,
+    X,
 } from 'lucide-vue-next';
+import { computed, onMounted, ref } from 'vue';
 
 interface Platform {
     id: number;
@@ -87,9 +84,7 @@ const props = defineProps<{
     statistics: Statistics; // Tambahkan prop statistics
 }>();
 
-const breadcrumbs = [
-    { title: 'Transactions', href: '/transactions' },
-];
+const breadcrumbs = [{ title: 'Transactions', href: '/transactions' }];
 
 // State
 const showAddModal = ref(false);
@@ -107,29 +102,35 @@ const availableTypes = computed(() => {
 
 // Watch for category changes to reset type if needed
 import { watch } from 'vue';
-watch(() => transactionForm.category, (newCategory, oldCategory) => {
-    if (oldCategory && newCategory !== oldCategory) {
-        // Only reset if we're not in edit mode with the initial type
-        if (!editingTransaction.value || editingTransaction.value.category !== newCategory) {
-            transactionForm.type = '';
+watch(
+    () => transactionForm.category,
+    (newCategory, oldCategory) => {
+        if (oldCategory && newCategory !== oldCategory) {
+            // Only reset if we're not in edit mode with the initial type
+            if (
+                !editingTransaction.value ||
+                editingTransaction.value.category !== newCategory
+            ) {
+                transactionForm.type = '';
+            }
         }
-    }
-});
+    },
+);
 
 // Fungsi untuk mendapatkan tanggal awal bulan dan tanggal saat ini
 const getDefaultDates = () => {
     const now = new Date();
     const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    
+
     const formatJakartaDate = (date: Date) => {
         return date.toLocaleDateString('en-CA', {
-            timeZone: 'Asia/Jakarta'
+            timeZone: 'Asia/Jakarta',
         });
     };
-    
+
     return {
         start_date: formatJakartaDate(firstDayOfMonth),
-        end_date: formatJakartaDate(now)
+        end_date: formatJakartaDate(now),
     };
 };
 
@@ -173,11 +174,11 @@ const formatCurrency = (amount: number) => {
         if (typeof amount !== 'number' || isNaN(amount) || !isFinite(amount)) {
             amount = 0;
         }
-        return new Intl.NumberFormat('id-ID', { 
-            style: 'currency', 
-            currency: 'IDR', 
+        return new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
             minimumFractionDigits: 2,
-            maximumFractionDigits: 2
+            maximumFractionDigits: 2,
         }).format(amount);
     } catch {
         return 'Rp 0';
@@ -189,10 +190,10 @@ const formatDate = (dateString: string) => {
         if (!dateString) return 'N/A';
         const date = new Date(dateString);
         if (isNaN(date.getTime())) return 'Invalid Date';
-        return date.toLocaleDateString('en-US', { 
+        return date.toLocaleDateString('en-US', {
             weekday: 'short',
             day: 'numeric',
-            month: 'short'
+            month: 'short',
         });
     } catch {
         return 'N/A';
@@ -217,7 +218,7 @@ const getMonthYear = (dateString: string) => {
         if (isNaN(date.getTime())) return '---';
         return date.toLocaleDateString('en-US', {
             month: 'short',
-            year: 'numeric'
+            year: 'numeric',
         });
     } catch {
         return '---';
@@ -225,8 +226,12 @@ const getMonthYear = (dateString: string) => {
 };
 
 // Actions
-const applyFilters = () => filterForm.get('/transactions', { preserveState: true, preserveScroll: true });
-const resetFilters = () => window.location.href = '/transactions';
+const applyFilters = () =>
+    filterForm.get('/transactions', {
+        preserveState: true,
+        preserveScroll: true,
+    });
+const resetFilters = () => (window.location.href = '/transactions');
 
 // Modal Actions
 const openAddModal = (category: 'income' | 'expense') => {
@@ -252,7 +257,7 @@ const submitTransaction = () => {
     formData.append('type', transactionForm.type);
     formData.append('description', transactionForm.description);
     formData.append('amount', transactionForm.amount.toString());
-    
+
     if (transactionForm.attachment) {
         formData.append('attachment', transactionForm.attachment);
     }
@@ -295,7 +300,7 @@ const updateTransaction = () => {
     formData.append('type', transactionForm.type);
     formData.append('description', transactionForm.description);
     formData.append('amount', transactionForm.amount.toString());
-    
+
     if (transactionForm.attachment) {
         formData.append('attachment', transactionForm.attachment);
     }
@@ -337,7 +342,6 @@ onMounted(() => {
         filterForm.end_date = getDefaultDates().end_date;
     }
 });
-
 </script>
 
 <template>
@@ -349,38 +353,56 @@ onMounted(() => {
             <div class="flex flex-col space-y-4">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h2 class="text-2xl font-semibold tracking-tight text-white">Transactions</h2>
-                        <p class="text-sm text-zinc-400 mt-1">Manage your financial records</p>
+                        <h2
+                            class="text-2xl font-semibold tracking-tight text-white"
+                        >
+                            Transactions
+                        </h2>
+                        <p class="mt-1 text-sm text-zinc-400">
+                            Manage your financial records
+                        </p>
                     </div>
                     <div class="flex items-center gap-2">
-                        <Button 
-                            variant="outline" 
+                        <Button
+                            variant="outline"
                             class="h-9 border-zinc-800 bg-black/50 text-zinc-300 hover:bg-zinc-900 hover:text-white"
                             @click="showFilters = !showFilters"
                         >
-                            <Filter class="h-4 w-4 mr-2" />
+                            <Filter class="mr-2 h-4 w-4" />
                             {{ showFilters ? 'Hide' : 'Filter' }}
                         </Button>
                         <DropdownMenu>
                             <DropdownMenuTrigger as-child>
-                                <Button variant="outline" class="h-9 border-zinc-800 bg-black/50 text-zinc-300 hover:bg-zinc-900 hover:text-white">
-                                    <Download class="h-4 w-4 mr-2" />
+                                <Button
+                                    variant="outline"
+                                    class="h-9 border-zinc-800 bg-black/50 text-zinc-300 hover:bg-zinc-900 hover:text-white"
+                                >
+                                    <Download class="mr-2 h-4 w-4" />
                                     Export
                                 </Button>
                             </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end" class="w-48 bg-zinc-950 border-zinc-800">
-                                <DropdownMenuItem @click="exportCSV" class="cursor-pointer text-zinc-300 hover:text-white hover:bg-zinc-900">
-                                    <FileSpreadsheet class="h-4 w-4 mr-2" />
+                            <DropdownMenuContent
+                                align="end"
+                                class="w-48 border-zinc-800 bg-zinc-950"
+                            >
+                                <DropdownMenuItem
+                                    @click="exportCSV"
+                                    class="cursor-pointer text-zinc-300 hover:bg-zinc-900 hover:text-white"
+                                >
+                                    <FileSpreadsheet class="mr-2 h-4 w-4" />
                                     CSV
                                 </DropdownMenuItem>
-                                <DropdownMenuItem @click="exportPDF" class="cursor-pointer text-zinc-300 hover:text-white hover:bg-zinc-900">
-                                    <FileText class="h-4 w-4 mr-2" />
+                                <DropdownMenuItem
+                                    @click="exportPDF"
+                                    class="cursor-pointer text-zinc-300 hover:bg-zinc-900 hover:text-white"
+                                >
+                                    <FileText class="mr-2 h-4 w-4" />
                                     PDF
                                 </DropdownMenuItem>
                             </DropdownMenuContent>
                         </DropdownMenu>
-                        <Button 
-                            class="h-9 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600 text-white shadow-lg shadow-orange-900/25"
+                        <Button
+                            class="h-9 bg-gradient-to-r from-orange-600 to-orange-500 text-white shadow-lg shadow-orange-900/25 hover:from-orange-700 hover:to-orange-600"
                             @click="showAddModal = true"
                         >
                             + Add
@@ -389,41 +411,71 @@ onMounted(() => {
                 </div>
 
                 <!-- Statistik Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div class="bg-gradient-to-br from-green-500/10 to-green-900/5 border border-green-800/20 rounded-xl p-4">
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+                    <div
+                        class="rounded-xl border border-green-800/20 bg-gradient-to-br from-green-500/10 to-green-900/5 p-4"
+                    >
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm text-green-400 font-medium">Total Income</p>
-                                <p class="text-2xl font-bold text-white mt-1">{{ formatCurrency(totalIncome) }}</p>
-                                <p class="text-xs text-green-500/70 mt-1">Based on filtered period</p>
+                                <p class="text-sm font-medium text-green-400">
+                                    Total Income
+                                </p>
+                                <p class="mt-1 text-2xl font-bold text-white">
+                                    {{ formatCurrency(totalIncome) }}
+                                </p>
+                                <p class="mt-1 text-xs text-green-500/70">
+                                    Based on filtered period
+                                </p>
                             </div>
-                            <div class="w-10 h-10 rounded-full bg-green-500/20 flex items-center justify-center">
+                            <div
+                                class="flex h-10 w-10 items-center justify-center rounded-full bg-green-500/20"
+                            >
                                 <TrendingUp class="h-5 w-5 text-green-400" />
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="bg-gradient-to-br from-red-500/10 to-red-900/5 border border-red-800/20 rounded-xl p-4">
+
+                    <div
+                        class="rounded-xl border border-red-800/20 bg-gradient-to-br from-red-500/10 to-red-900/5 p-4"
+                    >
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm text-red-400 font-medium">Total Expenses</p>
-                                <p class="text-2xl font-bold text-white mt-1">{{ formatCurrency(totalExpenses) }}</p>
-                                <p class="text-xs text-red-500/70 mt-1">Based on filtered period</p>
+                                <p class="text-sm font-medium text-red-400">
+                                    Total Expenses
+                                </p>
+                                <p class="mt-1 text-2xl font-bold text-white">
+                                    {{ formatCurrency(totalExpenses) }}
+                                </p>
+                                <p class="mt-1 text-xs text-red-500/70">
+                                    Based on filtered period
+                                </p>
                             </div>
-                            <div class="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center">
+                            <div
+                                class="flex h-10 w-10 items-center justify-center rounded-full bg-red-500/20"
+                            >
                                 <TrendingDown class="h-5 w-5 text-red-400" />
                             </div>
                         </div>
                     </div>
-                    
-                    <div class="bg-gradient-to-br from-blue-500/10 to-blue-900/5 border border-blue-800/20 rounded-xl p-4">
+
+                    <div
+                        class="rounded-xl border border-blue-800/20 bg-gradient-to-br from-blue-500/10 to-blue-900/5 p-4"
+                    >
                         <div class="flex items-center justify-between">
                             <div>
-                                <p class="text-sm text-blue-400 font-medium">Net Balance</p>
-                                <p class="text-2xl font-bold text-white mt-1">{{ formatCurrency(netBalance) }}</p>
-                                <p class="text-xs text-blue-500/70 mt-1">Income - Expenses</p>
+                                <p class="text-sm font-medium text-blue-400">
+                                    Net Balance
+                                </p>
+                                <p class="mt-1 text-2xl font-bold text-white">
+                                    {{ formatCurrency(netBalance) }}
+                                </p>
+                                <p class="mt-1 text-xs text-blue-500/70">
+                                    Income - Expenses
+                                </p>
                             </div>
-                            <div class="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center">
+                            <div
+                                class="flex h-10 w-10 items-center justify-center rounded-full bg-blue-500/20"
+                            >
                                 <Wallet class="h-5 w-5 text-blue-400" />
                             </div>
                         </div>
@@ -440,119 +492,171 @@ onMounted(() => {
                 leave-from-class="opacity-100 translate-y-0"
                 leave-to-class="opacity-0 -translate-y-4"
             >
-                <div v-if="showFilters" class="rounded-xl bg-gradient-to-b from-zinc-900/50 to-zinc-950/30 border border-zinc-800/50 backdrop-blur-sm p-5 space-y-4">
+                <div
+                    v-if="showFilters"
+                    class="space-y-4 rounded-xl border border-zinc-800/50 bg-gradient-to-b from-zinc-900/50 to-zinc-950/30 p-5 backdrop-blur-sm"
+                >
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-2">
                             <Filter class="h-4 w-4 text-zinc-500" />
-                            <h3 class="text-sm font-medium text-zinc-300">Filter Transactions</h3>
+                            <h3 class="text-sm font-medium text-zinc-300">
+                                Filter Transactions
+                            </h3>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div
+                        class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
+                    >
                         <div class="space-y-2">
-                            <Label class="text-xs font-medium text-zinc-400 flex items-center gap-2">
+                            <Label
+                                class="flex items-center gap-2 text-xs font-medium text-zinc-400"
+                            >
                                 <Calendar class="h-3 w-3" />
                                 Date Range
                             </Label>
                             <div class="grid grid-cols-2 gap-2">
-                                <Input 
-                                    type="date" 
-                                    v-model="filterForm.start_date" 
-                                    class="h-9 bg-black/50 border-zinc-800 text-white text-sm"
+                                <Input
+                                    type="date"
+                                    v-model="filterForm.start_date"
+                                    class="h-9 border-zinc-800 bg-black/50 text-sm text-white"
                                 />
-                                <Input 
-                                    type="date" 
-                                    v-model="filterForm.end_date" 
-                                    class="h-9 bg-black/50 border-zinc-800 text-white text-sm"
+                                <Input
+                                    type="date"
+                                    v-model="filterForm.end_date"
+                                    class="h-9 border-zinc-800 bg-black/50 text-sm text-white"
                                 />
                             </div>
                         </div>
                         <div class="space-y-2">
-                            <Label class="text-xs font-medium text-zinc-400">Category</Label>
+                            <Label class="text-xs font-medium text-zinc-400"
+                                >Category</Label
+                            >
                             <div class="flex gap-2">
                                 <Button
                                     @click="filterForm.category = ''"
-                                    :variant="filterForm.category === '' ? 'default' : 'outline'"
+                                    :variant="
+                                        filterForm.category === ''
+                                            ? 'default'
+                                            : 'outline'
+                                    "
                                     size="sm"
                                     class="h-8 text-xs"
-                                    :class="filterForm.category === '' ? 'bg-zinc-800' : 'border-zinc-800 text-zinc-400'"
+                                    :class="
+                                        filterForm.category === ''
+                                            ? 'bg-zinc-800'
+                                            : 'border-zinc-800 text-zinc-400'
+                                    "
                                 >
                                     All
                                 </Button>
                                 <Button
                                     @click="filterForm.category = 'income'"
-                                    :variant="filterForm.category === 'income' ? 'default' : 'outline'"
+                                    :variant="
+                                        filterForm.category === 'income'
+                                            ? 'default'
+                                            : 'outline'
+                                    "
                                     size="sm"
                                     class="h-8 text-xs"
-                                    :class="filterForm.category === 'income' ? 'bg-green-600/20 text-green-400 border-green-800/30' : 'border-zinc-800 text-zinc-400'"
+                                    :class="
+                                        filterForm.category === 'income'
+                                            ? 'border-green-800/30 bg-green-600/20 text-green-400'
+                                            : 'border-zinc-800 text-zinc-400'
+                                    "
                                 >
                                     Income
                                 </Button>
                                 <Button
                                     @click="filterForm.category = 'expense'"
-                                    :variant="filterForm.category === 'expense' ? 'default' : 'outline'"
+                                    :variant="
+                                        filterForm.category === 'expense'
+                                            ? 'default'
+                                            : 'outline'
+                                    "
                                     size="sm"
                                     class="h-8 text-xs"
-                                    :class="filterForm.category === 'expense' ? 'bg-red-600/20 text-red-400 border-red-800/30' : 'border-zinc-800 text-zinc-400'"
+                                    :class="
+                                        filterForm.category === 'expense'
+                                            ? 'border-red-800/30 bg-red-600/20 text-red-400'
+                                            : 'border-zinc-800 text-zinc-400'
+                                    "
                                 >
                                     Expense
                                 </Button>
                             </div>
                         </div>
-                        
+
                         <div class="space-y-2">
-                            <Label class="text-xs font-medium text-zinc-400 flex items-center gap-2">
+                            <Label
+                                class="flex items-center gap-2 text-xs font-medium text-zinc-400"
+                            >
                                 <CreditCard class="h-3 w-3" />
                                 Platform
                             </Label>
-                            <select 
-                                v-model="filterForm.platform_id" 
-                                class="w-full h-9 rounded-md border border-zinc-800 bg-black/50 px-3 text-sm text-white focus:ring-1 focus:ring-orange-600/50 focus:border-orange-600/50"
+                            <select
+                                v-model="filterForm.platform_id"
+                                class="h-9 w-full rounded-md border border-zinc-800 bg-black/50 px-3 text-sm text-white focus:border-orange-600/50 focus:ring-1 focus:ring-orange-600/50"
                             >
                                 <option value="">All Platforms</option>
-                                <option v-for="p in platforms" :key="p.id" :value="p.id">{{ p.name }}</option>
+                                <option
+                                    v-for="p in platforms"
+                                    :key="p.id"
+                                    :value="p.id"
+                                >
+                                    {{ p.name }}
+                                </option>
                             </select>
                         </div>
-                        
+
                         <div class="space-y-2">
-                            <Label class="text-xs font-medium text-zinc-400 flex items-center gap-2">
+                            <Label
+                                class="flex items-center gap-2 text-xs font-medium text-zinc-400"
+                            >
                                 <FileType class="h-3 w-3" />
                                 Type
                             </Label>
-                            <select 
-                                v-model="filterForm.type" 
-                                class="w-full h-9 rounded-md border border-zinc-800 bg-black/50 px-3 text-sm text-white focus:ring-1 focus:ring-orange-600/50 focus:border-orange-600/50"
+                            <select
+                                v-model="filterForm.type"
+                                class="h-9 w-full rounded-md border border-zinc-800 bg-black/50 px-3 text-sm text-white focus:border-orange-600/50 focus:ring-1 focus:ring-orange-600/50"
                             >
                                 <option value="">All Types</option>
-                                <option v-for="t in types" :key="t" :value="t">{{ t }}</option>
+                                <option v-for="t in types" :key="t" :value="t">
+                                    {{ t }}
+                                </option>
                             </select>
                         </div>
-                        
+
                         <div class="space-y-2">
-                            <Label class="text-xs font-medium text-zinc-400 flex items-center gap-2">
+                            <Label
+                                class="flex items-center gap-2 text-xs font-medium text-zinc-400"
+                            >
                                 <Search class="h-3 w-3" />
                                 Search
                             </Label>
-                            <Input 
-                                type="text" 
-                                v-model="filterForm.description" 
-                                placeholder="Search descriptions..." 
-                                class="h-9 bg-black/50 border-zinc-800 text-white"
+                            <Input
+                                type="text"
+                                v-model="filterForm.description"
+                                placeholder="Search descriptions..."
+                                class="h-9 border-zinc-800 bg-black/50 text-white"
                             />
                         </div>
-                        
+
                         <div class="space-y-2">
-                            <Label class="text-xs font-medium text-zinc-400 opacity-0">Actions</Label>
+                            <Label
+                                class="text-xs font-medium text-zinc-400 opacity-0"
+                                >Actions</Label
+                            >
                             <div class="flex gap-2">
-                                <Button 
+                                <Button
                                     @click="applyFilters"
-                                    class="flex-1 h-9 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600 text-white"
+                                    class="h-9 flex-1 bg-gradient-to-r from-orange-600 to-orange-500 text-white hover:from-orange-700 hover:to-orange-600"
                                 >
                                     Apply
                                 </Button>
-                                <Button 
+                                <Button
                                     @click="resetFilters"
                                     variant="outline"
-                                    class="h-9 border-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-900"
+                                    class="h-9 border-zinc-800 text-zinc-400 hover:bg-zinc-900 hover:text-white"
                                 >
                                     Clear
                                 </Button>
@@ -567,38 +671,68 @@ onMounted(() => {
                 <!-- Header dengan total count -->
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-lg font-medium text-white">Recent Transactions</h3>
+                        <h3 class="text-lg font-medium text-white">
+                            Recent Transactions
+                        </h3>
                         <p class="text-sm text-zinc-500">
-                            {{ transactions?.total || 0 }} total records • 
-                            Showing {{ transactions?.from || 0 }}-{{ transactions?.to || 0 }} • 
-                            {{ transactions?.per_page || 16 }} per page
+                            {{ transactions?.total || 0 }} total records •
+                            Showing {{ transactions?.from || 0 }}-{{
+                                transactions?.to || 0
+                            }}
+                            • {{ transactions?.per_page || 16 }} per page
                         </p>
                     </div>
                 </div>
 
                 <!-- Cards Container -->
-                <div v-if="transactions?.data?.length" class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div
+                    v-if="transactions?.data?.length"
+                    class="grid grid-cols-1 gap-4 lg:grid-cols-2"
+                >
                     <transition-group name="list">
-                        <div 
-                            v-for="t in transactions.data" 
+                        <div
+                            v-for="t in transactions.data"
                             :key="t.id"
-                            class="group relative bg-gradient-to-br from-zinc-900/50 to-black/30 border border-zinc-800/50 rounded-2xl p-5 hover:border-zinc-700/50 hover:bg-zinc-900/30 transition-all duration-300"
+                            class="group relative rounded-2xl border border-zinc-800/50 bg-gradient-to-br from-zinc-900/50 to-black/30 p-5 transition-all duration-300 hover:border-zinc-700/50 hover:bg-zinc-900/30"
                         >
-                            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl"></div>
-                            
-                            <div class="relative flex items-start justify-between">
+                            <div
+                                class="absolute inset-0 rounded-2xl bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                            ></div>
+
+                            <div
+                                class="relative flex items-start justify-between"
+                            >
                                 <!-- Left Section -->
                                 <div class="flex items-start gap-4">
                                     <!-- Date Circle -->
                                     <div class="flex flex-col items-center">
-                                        <div 
-                                            class="w-14 h-14 rounded-xl flex items-center justify-center"
-                                            :class="t.category === 'income' ? 'bg-green-500/10 border border-green-800/30' : 'bg-red-500/10 border border-red-800/30'"
+                                        <div
+                                            class="flex h-14 w-14 items-center justify-center rounded-xl"
+                                            :class="
+                                                t.category === 'income'
+                                                    ? 'border border-green-800/30 bg-green-500/10'
+                                                    : 'border border-red-800/30 bg-red-500/10'
+                                            "
                                         >
                                             <div class="text-center">
-                                                <div class="text-lg font-bold text-white">{{ getDayOfMonth(t.date) }}</div>
-                                                <div class="text-[10px] uppercase tracking-wider" :class="t.category === 'income' ? 'text-green-400' : 'text-red-400'">
-                                                    {{ getMonthYear(t.date).split(' ')[0] }}
+                                                <div
+                                                    class="text-lg font-bold text-white"
+                                                >
+                                                    {{ getDayOfMonth(t.date) }}
+                                                </div>
+                                                <div
+                                                    class="text-[10px] tracking-wider uppercase"
+                                                    :class="
+                                                        t.category === 'income'
+                                                            ? 'text-green-400'
+                                                            : 'text-red-400'
+                                                    "
+                                                >
+                                                    {{
+                                                        getMonthYear(
+                                                            t.date,
+                                                        ).split(' ')[0]
+                                                    }}
                                                 </div>
                                             </div>
                                         </div>
@@ -608,29 +742,65 @@ onMounted(() => {
                                     <div class="space-y-2">
                                         <!-- Category & Type -->
                                         <div class="flex items-center gap-3">
-                                            <span 
-                                                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
-                                                :class="t.category === 'income' ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'"
+                                            <span
+                                                class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium"
+                                                :class="
+                                                    t.category === 'income'
+                                                        ? 'bg-green-500/20 text-green-400'
+                                                        : 'bg-red-500/20 text-red-400'
+                                                "
                                             >
-                                                <ArrowUpRight v-if="t.category === 'income'" class="h-3 w-3" />
-                                                <ArrowDownLeft v-if="t.category === 'expense'" class="h-3 w-3" />
-                                                {{ t.category === 'income' ? 'Income' : 'Expense' }}
+                                                <ArrowUpRight
+                                                    v-if="
+                                                        t.category === 'income'
+                                                    "
+                                                    class="h-3 w-3"
+                                                />
+                                                <ArrowDownLeft
+                                                    v-if="
+                                                        t.category === 'expense'
+                                                    "
+                                                    class="h-3 w-3"
+                                                />
+                                                {{
+                                                    t.category === 'income'
+                                                        ? 'Income'
+                                                        : 'Expense'
+                                                }}
                                             </span>
-                                            <span class="text-xs text-zinc-500 font-medium">
+                                            <span
+                                                class="text-xs font-medium text-zinc-500"
+                                            >
                                                 {{ t.type || 'Uncategorized' }}
                                             </span>
                                         </div>
 
                                         <!-- Platform & Description -->
                                         <div>
-                                            <div class="flex items-center gap-2">
-                                                <CreditCard class="h-3.5 w-3.5 text-zinc-600" />
-                                                <span class="text-sm font-medium text-white">{{ t.platform?.name || 'No Platform' }}</span>
+                                            <div
+                                                class="flex items-center gap-2"
+                                            >
+                                                <CreditCard
+                                                    class="h-3.5 w-3.5 text-zinc-600"
+                                                />
+                                                <span
+                                                    class="text-sm font-medium text-white"
+                                                    >{{
+                                                        t.platform?.name ||
+                                                        'No Platform'
+                                                    }}</span
+                                                >
                                             </div>
-                                            <p v-if="t.description" class="text-sm text-zinc-400 mt-1 line-clamp-1">
+                                            <p
+                                                v-if="t.description"
+                                                class="mt-1 line-clamp-1 text-sm text-zinc-400"
+                                            >
                                                 {{ t.description }}
                                             </p>
-                                            <p v-else class="text-sm text-zinc-600 italic mt-1">
+                                            <p
+                                                v-else
+                                                class="mt-1 text-sm text-zinc-600 italic"
+                                            >
                                                 No description
                                             </p>
                                         </div>
@@ -640,33 +810,43 @@ onMounted(() => {
                                 <!-- Right Section -->
                                 <div class="flex flex-col items-end">
                                     <!-- Amount -->
-                                    <div 
+                                    <div
                                         class="text-xl font-bold"
-                                        :class="t.category === 'income' ? 'text-green-400' : 'text-white'"
+                                        :class="
+                                            t.category === 'income'
+                                                ? 'text-green-400'
+                                                : 'text-white'
+                                        "
                                     >
-                                        {{ t.category === 'income' ? '+' : '-' }}{{ t.formatted_amount || formatCurrency(t.amount || 0) }}
+                                        {{ t.category === 'income' ? '+' : '-'
+                                        }}{{
+                                            t.formatted_amount ||
+                                            formatCurrency(t.amount || 0)
+                                        }}
                                     </div>
-                                    
+
                                     <!-- Formatted Amount -->
-                                    <div class="text-xs text-zinc-500 mt-1">
+                                    <div class="mt-1 text-xs text-zinc-500">
                                         {{ formatDate(t.date) }}
                                     </div>
 
                                     <!-- Actions -->
-                                    <div class="flex items-center gap-1 mt-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                        <Button 
-                                            @click="openEditModal(t)" 
-                                            size="icon" 
-                                            variant="ghost" 
-                                            class="h-7 w-7 text-zinc-500 hover:text-white hover:bg-zinc-800/50"
+                                    <div
+                                        class="mt-4 flex items-center gap-1 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+                                    >
+                                        <Button
+                                            @click="openEditModal(t)"
+                                            size="icon"
+                                            variant="ghost"
+                                            class="h-7 w-7 text-zinc-500 hover:bg-zinc-800/50 hover:text-white"
                                         >
                                             <Pencil class="h-3.5 w-3.5" />
                                         </Button>
-                                        <Button 
-                                            @click="deleteTransaction(t.id)" 
-                                            size="icon" 
-                                            variant="ghost" 
-                                            class="h-7 w-7 text-zinc-500 hover:text-red-500 hover:bg-red-500/10"
+                                        <Button
+                                            @click="deleteTransaction(t.id)"
+                                            size="icon"
+                                            variant="ghost"
+                                            class="h-7 w-7 text-zinc-500 hover:bg-red-500/10 hover:text-red-500"
                                         >
                                             <Trash2 class="h-3.5 w-3.5" />
                                         </Button>
@@ -675,27 +855,37 @@ onMounted(() => {
                             </div>
 
                             <!-- Bottom Border -->
-                            <div 
-                                class="absolute bottom-0 left-0 right-0 h-0.5 rounded-full transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"
-                                :class="t.category === 'income' ? 'bg-gradient-to-r from-green-500/50 to-transparent' : 'bg-gradient-to-r from-red-500/50 to-transparent'"
+                            <div
+                                class="absolute right-0 bottom-0 left-0 h-0.5 scale-x-0 transform rounded-full transition-transform duration-300 group-hover:scale-x-100"
+                                :class="
+                                    t.category === 'income'
+                                        ? 'bg-gradient-to-r from-green-500/50 to-transparent'
+                                        : 'bg-gradient-to-r from-red-500/50 to-transparent'
+                                "
                             ></div>
                         </div>
                     </transition-group>
                 </div>
 
                 <!-- Empty State -->
-                <div v-else class="text-center py-16">
-                    <div class="max-w-md mx-auto space-y-4">
-                        <div class="w-16 h-16 mx-auto rounded-full bg-zinc-900/50 border border-zinc-800 flex items-center justify-center">
+                <div v-else class="py-16 text-center">
+                    <div class="mx-auto max-w-md space-y-4">
+                        <div
+                            class="mx-auto flex h-16 w-16 items-center justify-center rounded-full border border-zinc-800 bg-zinc-900/50"
+                        >
                             <CreditCard class="h-8 w-8 text-zinc-600" />
                         </div>
                         <div>
-                            <h3 class="text-lg font-medium text-white">No transactions found</h3>
-                            <p class="text-zinc-500 mt-1">Start by adding your first transaction</p>
+                            <h3 class="text-lg font-medium text-white">
+                                No transactions found
+                            </h3>
+                            <p class="mt-1 text-zinc-500">
+                                Start by adding your first transaction
+                            </p>
                         </div>
-                        <Button 
+                        <Button
                             @click="showAddModal = true"
-                            class="mt-4 bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600 text-white"
+                            class="mt-4 bg-gradient-to-r from-orange-600 to-orange-500 text-white hover:from-orange-700 hover:to-orange-600"
                         >
                             + Add Transaction
                         </Button>
@@ -703,42 +893,73 @@ onMounted(() => {
                 </div>
 
                 <!-- Pagination -->
-                <div v-if="transactions?.data?.length && transactions?.last_page > 1" class="flex items-center justify-between pt-6 border-t border-zinc-800/50">
+                <div
+                    v-if="
+                        transactions?.data?.length &&
+                        transactions?.last_page > 1
+                    "
+                    class="flex items-center justify-between border-t border-zinc-800/50 pt-6"
+                >
                     <p class="text-sm text-zinc-500">
-                        Page {{ transactions?.current_page || 1 }} of {{ transactions?.last_page || 1 }}
+                        Page {{ transactions?.current_page || 1 }} of
+                        {{ transactions?.last_page || 1 }}
                     </p>
                     <div class="flex items-center gap-2">
-                        <Button 
-                            :disabled="!transactions?.current_page || transactions.current_page <= 1" 
-                            @click="router.get(`/transactions?page=${(transactions?.current_page || 1) - 1}`)"
-                            variant="outline" 
-                            size="sm" 
-                            class="h-9 w-9 border-zinc-800 bg-black/50 text-white hover:bg-zinc-900 disabled:opacity-30 disabled:cursor-not-allowed"
+                        <Button
+                            :disabled="
+                                !transactions?.current_page ||
+                                transactions.current_page <= 1
+                            "
+                            @click="
+                                router.get(
+                                    `/transactions?page=${(transactions?.current_page || 1) - 1}`,
+                                )
+                            "
+                            variant="outline"
+                            size="sm"
+                            class="h-9 w-9 border-zinc-800 bg-black/50 text-white hover:bg-zinc-900 disabled:cursor-not-allowed disabled:opacity-30"
                         >
                             <ChevronLeft class="h-4 w-4" />
                         </Button>
                         <div class="flex items-center gap-1">
-                            <span 
-                                v-for="page in Math.min(5, transactions?.last_page || 1)" 
+                            <span
+                                v-for="page in Math.min(
+                                    5,
+                                    transactions?.last_page || 1,
+                                )"
                                 :key="page"
-                                @click="router.get(`/transactions?page=${page}`)"
+                                @click="
+                                    router.get(`/transactions?page=${page}`)
+                                "
                                 :class="[
-                                    'h-9 w-9 flex items-center justify-center rounded-md text-sm cursor-pointer transition-all',
-                                    transactions?.current_page === page 
-                                        ? 'bg-orange-600 text-white' 
-                                        : 'text-zinc-400 hover:text-white hover:bg-zinc-900/50'
+                                    'flex h-9 w-9 cursor-pointer items-center justify-center rounded-md text-sm transition-all',
+                                    transactions?.current_page === page
+                                        ? 'bg-orange-600 text-white'
+                                        : 'text-zinc-400 hover:bg-zinc-900/50 hover:text-white',
                                 ]"
                             >
                                 {{ page }}
                             </span>
-                            <span v-if="transactions?.last_page > 5" class="text-zinc-600 px-2">...</span>
+                            <span
+                                v-if="transactions?.last_page > 5"
+                                class="px-2 text-zinc-600"
+                                >...</span
+                            >
                         </div>
-                        <Button 
-                            :disabled="!transactions?.current_page || transactions.current_page >= transactions.last_page" 
-                            @click="router.get(`/transactions?page=${(transactions?.current_page || 1) + 1}`)"
-                            variant="outline" 
-                            size="sm" 
-                            class="h-9 w-9 border-zinc-800 bg-black/50 text-white hover:bg-zinc-900 disabled:opacity-30 disabled:cursor-not-allowed"
+                        <Button
+                            :disabled="
+                                !transactions?.current_page ||
+                                transactions.current_page >=
+                                    transactions.last_page
+                            "
+                            @click="
+                                router.get(
+                                    `/transactions?page=${(transactions?.current_page || 1) + 1}`,
+                                )
+                            "
+                            variant="outline"
+                            size="sm"
+                            class="h-9 w-9 border-zinc-800 bg-black/50 text-white hover:bg-zinc-900 disabled:cursor-not-allowed disabled:opacity-30"
                         >
                             <ChevronRight class="h-4 w-4" />
                         </Button>
@@ -748,142 +969,215 @@ onMounted(() => {
         </div>
 
         <!-- Add Transaction Modal -->
-        <div v-if="showAddModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0">
-            <div class="fixed inset-0 bg-black/80 backdrop-blur-sm" @click="closeAddModal"></div>
-            <div class="relative z-50 w-full max-w-md bg-gradient-to-b from-zinc-950 to-black border border-zinc-800 rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 duration-300">
+        <div
+            v-if="showAddModal"
+            class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0"
+        >
+            <div
+                class="fixed inset-0 bg-black/80 backdrop-blur-sm"
+                @click="closeAddModal"
+            ></div>
+            <div
+                class="relative z-50 w-full max-w-md animate-in rounded-2xl border border-zinc-800 bg-gradient-to-b from-zinc-950 to-black shadow-2xl duration-300 zoom-in-95 fade-in"
+            >
                 <div class="p-6">
-                    <div class="flex items-center justify-between mb-6">
+                    <div class="mb-6 flex items-center justify-between">
                         <div>
-                            <h3 class="text-xl font-bold text-white">Add Transaction</h3>
-                            <p class="text-sm text-zinc-500">Record your financial activity</p>
+                            <h3 class="text-xl font-bold text-white">
+                                Add Transaction
+                            </h3>
+                            <p class="text-sm text-zinc-500">
+                                Record your financial activity
+                            </p>
                         </div>
-                        <button @click="closeAddModal" class="text-zinc-500 hover:text-white transition-colors">
+                        <button
+                            @click="closeAddModal"
+                            class="text-zinc-500 transition-colors hover:text-white"
+                        >
                             <X class="h-5 w-5" />
                         </button>
                     </div>
-                    
+
                     <!-- Category Selection -->
                     <div v-if="!selectedCategory" class="space-y-4">
                         <div class="grid grid-cols-2 gap-3">
                             <button
                                 @click="openAddModal('income')"
-                                class="h-24 bg-gradient-to-br from-green-500/5 to-green-900/10 border border-green-800/30 rounded-xl flex flex-col items-center justify-center gap-3 transition-all hover:border-green-600/50 hover:bg-green-500/10 group"
+                                class="group flex h-24 flex-col items-center justify-center gap-3 rounded-xl border border-green-800/30 bg-gradient-to-br from-green-500/5 to-green-900/10 transition-all hover:border-green-600/50 hover:bg-green-500/10"
                             >
-                                <div class="w-12 h-12 rounded-full bg-green-500/20 text-green-500 flex items-center justify-center group-hover:bg-green-500 group-hover:text-white transition-all duration-300">
+                                <div
+                                    class="flex h-12 w-12 items-center justify-center rounded-full bg-green-500/20 text-green-500 transition-all duration-300 group-hover:bg-green-500 group-hover:text-white"
+                                >
                                     <ArrowUpRight class="h-5 w-5" />
                                 </div>
-                                <span class="text-white font-medium">Income</span>
+                                <span class="font-medium text-white"
+                                    >Income</span
+                                >
                             </button>
                             <button
                                 @click="openAddModal('expense')"
-                                class="h-24 bg-gradient-to-br from-red-500/5 to-red-900/10 border border-red-800/30 rounded-xl flex flex-col items-center justify-center gap-3 transition-all hover:border-red-600/50 hover:bg-red-500/10 group"
+                                class="group flex h-24 flex-col items-center justify-center gap-3 rounded-xl border border-red-800/30 bg-gradient-to-br from-red-500/5 to-red-900/10 transition-all hover:border-red-600/50 hover:bg-red-500/10"
                             >
-                                <div class="w-12 h-12 rounded-full bg-red-500/20 text-red-500 flex items-center justify-center group-hover:bg-red-500 group-hover:text-white transition-all duration-300">
+                                <div
+                                    class="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/20 text-red-500 transition-all duration-300 group-hover:bg-red-500 group-hover:text-white"
+                                >
                                     <ArrowDownLeft class="h-5 w-5" />
                                 </div>
-                                <span class="text-white font-medium">Expense</span>
+                                <span class="font-medium text-white"
+                                    >Expense</span
+                                >
                             </button>
                         </div>
                     </div>
 
                     <!-- Transaction Form -->
-                    <form v-else @submit.prevent="submitTransaction" class="space-y-4">
+                    <form
+                        v-else
+                        @submit.prevent="submitTransaction"
+                        class="space-y-4"
+                    >
                         <div>
-                            <Label class="text-sm font-medium text-zinc-300 mb-2 block">Amount</Label>
+                            <Label
+                                class="mb-2 block text-sm font-medium text-zinc-300"
+                                >Amount</Label
+                            >
                             <div class="relative">
-                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">Rp</span>
-                                <Input 
-                                    v-model="transactionForm.amount" 
-                                    type="number" 
-                                    class="pl-12 h-12 bg-black/50 border-zinc-800 text-white text-lg font-medium focus:border-orange-600/50 focus:ring-orange-600/20" 
-                                    placeholder="0" 
-                                    required 
+                                <span
+                                    class="absolute top-1/2 left-3 -translate-y-1/2 text-zinc-500"
+                                    >Rp</span
+                                >
+                                <Input
+                                    v-model="transactionForm.amount"
+                                    type="number"
+                                    class="h-12 border-zinc-800 bg-black/50 pl-12 text-lg font-medium text-white focus:border-orange-600/50 focus:ring-orange-600/20"
+                                    placeholder="0"
+                                    required
                                     min="0"
                                     step="0.01"
                                 />
                             </div>
                         </div>
-                        
+
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <Label class="text-sm font-medium text-zinc-300 mb-2 block">Date</Label>
-                                <Input 
-                                    v-model="transactionForm.date" 
-                                    type="date" 
-                                    class="h-10 bg-black/50 border-zinc-800 text-white focus:border-orange-600/50" 
-                                    required 
+                                <Label
+                                    class="mb-2 block text-sm font-medium text-zinc-300"
+                                    >Date</Label
+                                >
+                                <Input
+                                    v-model="transactionForm.date"
+                                    type="date"
+                                    class="h-10 border-zinc-800 bg-black/50 text-white focus:border-orange-600/50"
+                                    required
                                 />
                             </div>
                             <div>
-                                <Label class="text-sm font-medium text-zinc-300 mb-2 block">Platform</Label>
-                                <select 
-                                    v-model="transactionForm.platform_id" 
-                                    class="w-full h-10 rounded-md border border-zinc-800 bg-black/50 px-3 text-sm text-white focus:ring-1 focus:ring-orange-600/50 focus:border-orange-600/50" 
+                                <Label
+                                    class="mb-2 block text-sm font-medium text-zinc-300"
+                                    >Platform</Label
+                                >
+                                <select
+                                    v-model="transactionForm.platform_id"
+                                    class="h-10 w-full rounded-md border border-zinc-800 bg-black/50 px-3 text-sm text-white focus:border-orange-600/50 focus:ring-1 focus:ring-orange-600/50"
                                     required
                                 >
-                                    <option value="" disabled selected>Select platform</option>
-                                    <option v-for="p in platforms" :key="p.id" :value="p.id">{{ p.name }}</option>
+                                    <option value="" disabled selected>
+                                        Select platform
+                                    </option>
+                                    <option
+                                        v-for="p in platforms"
+                                        :key="p.id"
+                                        :value="p.id"
+                                    >
+                                        {{ p.name }}
+                                    </option>
                                 </select>
                             </div>
                         </div>
-                        
+
                         <div>
-                            <Label class="text-sm font-medium text-zinc-300 mb-2 block">Type</Label>
-                            <select 
+                            <Label
+                                class="mb-2 block text-sm font-medium text-zinc-300"
+                                >Type</Label
+                            >
+                            <select
                                 v-model="transactionForm.type"
-                                class="h-10 bg-black/50 border border-zinc-800 text-white focus:border-orange-600/50 rounded px-3 w-full"
+                                class="h-10 w-full rounded border border-zinc-800 bg-black/50 px-3 text-white focus:border-orange-600/50"
                                 required
                             >
                                 <option value="" disabled>Select a type</option>
-                                <option v-for="type in availableTypes" :key="type" :value="type">
+                                <option
+                                    v-for="type in availableTypes"
+                                    :key="type"
+                                    :value="type"
+                                >
                                     {{ type }}
                                 </option>
                             </select>
                         </div>
-                        
+
                         <div v-if="selectedCategory === 'expense'">
-                            <Label class="text-sm font-medium text-zinc-300 mb-2 block">Receipt (Optional)</Label>
-                            <div class="border border-dashed border-zinc-800 rounded-lg p-4 text-center hover:border-zinc-700 transition-colors">
-                                <Input 
-                                    type="file" 
-                                    @input="transactionForm.attachment = $event.target.files[0]" 
-                                    class="hidden" 
+                            <Label
+                                class="mb-2 block text-sm font-medium text-zinc-300"
+                                >Receipt (Optional)</Label
+                            >
+                            <div
+                                class="rounded-lg border border-dashed border-zinc-800 p-4 text-center transition-colors hover:border-zinc-700"
+                            >
+                                <Input
+                                    type="file"
+                                    @input="
+                                        transactionForm.attachment =
+                                            $event.target.files[0]
+                                    "
+                                    class="hidden"
                                     id="attachment"
                                 />
                                 <label for="attachment" class="cursor-pointer">
-                                    <div class="text-zinc-500 text-sm">
+                                    <div class="text-sm text-zinc-500">
                                         Click to upload receipt
-                                        <p class="text-xs text-zinc-600 mt-1">JPG, PNG, PDF up to 2MB</p>
+                                        <p class="mt-1 text-xs text-zinc-600">
+                                            JPG, PNG, PDF up to 2MB
+                                        </p>
                                     </div>
                                 </label>
                             </div>
                         </div>
-                        
+
                         <div>
-                            <Label class="text-sm font-medium text-zinc-300 mb-2 block">Description</Label>
-                            <Input 
-                                v-model="transactionForm.description" 
-                                type="text" 
-                                placeholder="Add a note (optional)" 
-                                class="h-10 bg-black/50 border-zinc-800 text-white focus:border-orange-600/50" 
+                            <Label
+                                class="mb-2 block text-sm font-medium text-zinc-300"
+                                >Description</Label
+                            >
+                            <Input
+                                v-model="transactionForm.description"
+                                type="text"
+                                placeholder="Add a note (optional)"
+                                class="h-10 border-zinc-800 bg-black/50 text-white focus:border-orange-600/50"
                             />
                         </div>
 
-                        <div class="flex justify-end gap-3 pt-4 border-t border-zinc-800">
-                            <Button 
-                                type="button" 
-                                variant="ghost" 
-                                @click="selectedCategory = null" 
-                                class="text-zinc-400 hover:text-white hover:bg-zinc-900/50"
+                        <div
+                            class="flex justify-end gap-3 border-t border-zinc-800 pt-4"
+                        >
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                @click="selectedCategory = null"
+                                class="text-zinc-400 hover:bg-zinc-900/50 hover:text-white"
                             >
                                 Back
                             </Button>
-                            <Button 
-                                type="submit" 
-                                class="bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600 text-white w-32"
+                            <Button
+                                type="submit"
+                                class="w-32 bg-gradient-to-r from-orange-600 to-orange-500 text-white hover:from-orange-700 hover:to-orange-600"
                                 :disabled="transactionForm.processing"
                             >
-                                {{ transactionForm.processing ? 'Saving...' : 'Save' }}
+                                {{
+                                    transactionForm.processing
+                                        ? 'Saving...'
+                                        : 'Save'
+                                }}
                             </Button>
                         </div>
                     </form>
@@ -892,110 +1186,166 @@ onMounted(() => {
         </div>
 
         <!-- Edit Modal -->
-        <div v-if="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0">
-            <div class="fixed inset-0 bg-black/80 backdrop-blur-sm" @click="closeEditModal"></div>
-            <div class="relative z-50 w-full max-w-md bg-gradient-to-b from-zinc-950 to-black border border-zinc-800 rounded-2xl shadow-2xl animate-in fade-in zoom-in-95 duration-300">
+        <div
+            v-if="showEditModal"
+            class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-0"
+        >
+            <div
+                class="fixed inset-0 bg-black/80 backdrop-blur-sm"
+                @click="closeEditModal"
+            ></div>
+            <div
+                class="relative z-50 w-full max-w-md animate-in rounded-2xl border border-zinc-800 bg-gradient-to-b from-zinc-950 to-black shadow-2xl duration-300 zoom-in-95 fade-in"
+            >
                 <div class="p-6">
-                    <div class="flex items-center justify-between mb-6">
+                    <div class="mb-6 flex items-center justify-between">
                         <div>
-                            <h3 class="text-xl font-bold text-white">Edit Transaction</h3>
-                            <p class="text-sm text-zinc-500">Update transaction details</p>
+                            <h3 class="text-xl font-bold text-white">
+                                Edit Transaction
+                            </h3>
+                            <p class="text-sm text-zinc-500">
+                                Update transaction details
+                            </p>
                         </div>
-                        <button @click="closeEditModal" class="text-zinc-500 hover:text-white transition-colors">
+                        <button
+                            @click="closeEditModal"
+                            class="text-zinc-500 transition-colors hover:text-white"
+                        >
                             <X class="h-5 w-5" />
                         </button>
                     </div>
 
                     <form @submit.prevent="updateTransaction" class="space-y-4">
                         <div>
-                            <Label class="text-sm font-medium text-zinc-300 mb-2 block">Amount</Label>
+                            <Label
+                                class="mb-2 block text-sm font-medium text-zinc-300"
+                                >Amount</Label
+                            >
                             <div class="relative">
-                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">Rp</span>
-                                <Input 
-                                    v-model="transactionForm.amount" 
-                                    type="number" 
-                                    class="pl-12 h-12 bg-black/50 border-zinc-800 text-white text-lg font-medium focus:border-orange-600/50 focus:ring-orange-600/20" 
-                                    placeholder="0" 
-                                    required 
+                                <span
+                                    class="absolute top-1/2 left-3 -translate-y-1/2 text-zinc-500"
+                                    >Rp</span
+                                >
+                                <Input
+                                    v-model="transactionForm.amount"
+                                    type="number"
+                                    class="h-12 border-zinc-800 bg-black/50 pl-12 text-lg font-medium text-white focus:border-orange-600/50 focus:ring-orange-600/20"
+                                    placeholder="0"
+                                    required
                                     min="0"
                                     step="0.01"
                                 />
                             </div>
                         </div>
-                        
+
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <Label class="text-sm font-medium text-zinc-300 mb-2 block">Category</Label>
-                                <select 
-                                    v-model="transactionForm.category" 
-                                    class="w-full h-10 rounded-md border border-zinc-800 bg-black/50 px-3 text-sm text-white focus:ring-1 focus:ring-orange-600/50"
+                                <Label
+                                    class="mb-2 block text-sm font-medium text-zinc-300"
+                                    >Category</Label
+                                >
+                                <select
+                                    v-model="transactionForm.category"
+                                    class="h-10 w-full rounded-md border border-zinc-800 bg-black/50 px-3 text-sm text-white focus:ring-1 focus:ring-orange-600/50"
                                 >
                                     <option value="income">Income</option>
                                     <option value="expense">Expense</option>
                                 </select>
                             </div>
                             <div>
-                                <Label class="text-sm font-medium text-zinc-300 mb-2 block">Date</Label>
-                                <Input 
-                                    v-model="transactionForm.date" 
-                                    type="date" 
-                                    class="h-10 bg-black/50 border-zinc-800 text-white focus:border-orange-600/50" 
-                                    required 
+                                <Label
+                                    class="mb-2 block text-sm font-medium text-zinc-300"
+                                    >Date</Label
+                                >
+                                <Input
+                                    v-model="transactionForm.date"
+                                    type="date"
+                                    class="h-10 border-zinc-800 bg-black/50 text-white focus:border-orange-600/50"
+                                    required
                                 />
                             </div>
                         </div>
-                        
+
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <Label class="text-sm font-medium text-zinc-300 mb-2 block">Platform</Label>
-                                <select 
-                                    v-model="transactionForm.platform_id" 
-                                    class="w-full h-10 rounded-md border border-zinc-800 bg-black/50 px-3 text-sm text-white focus:ring-1 focus:ring-orange-600/50" 
+                                <Label
+                                    class="mb-2 block text-sm font-medium text-zinc-300"
+                                    >Platform</Label
+                                >
+                                <select
+                                    v-model="transactionForm.platform_id"
+                                    class="h-10 w-full rounded-md border border-zinc-800 bg-black/50 px-3 text-sm text-white focus:ring-1 focus:ring-orange-600/50"
                                     required
                                 >
-                                    <option value="" disabled>Select platform</option>
-                                    <option v-for="p in platforms" :key="p.id" :value="p.id">{{ p.name }}</option>
+                                    <option value="" disabled>
+                                        Select platform
+                                    </option>
+                                    <option
+                                        v-for="p in platforms"
+                                        :key="p.id"
+                                        :value="p.id"
+                                    >
+                                        {{ p.name }}
+                                    </option>
                                 </select>
                             </div>
                             <div>
-                                <Label class="text-sm font-medium text-zinc-300 mb-2 block">Type</Label>
-                                <select 
+                                <Label
+                                    class="mb-2 block text-sm font-medium text-zinc-300"
+                                    >Type</Label
+                                >
+                                <select
                                     v-model="transactionForm.type"
-                                    class="h-10 bg-black/50 border border-zinc-800 text-white focus:border-orange-600/50 rounded px-3 w-full"
+                                    class="h-10 w-full rounded border border-zinc-800 bg-black/50 px-3 text-white focus:border-orange-600/50"
                                     required
                                 >
-                                    <option value="" disabled>Select a type</option>
-                                    <option v-for="type in availableTypes" :key="type" :value="type">
+                                    <option value="" disabled>
+                                        Select a type
+                                    </option>
+                                    <option
+                                        v-for="type in availableTypes"
+                                        :key="type"
+                                        :value="type"
+                                    >
                                         {{ type }}
                                     </option>
                                 </select>
                             </div>
                         </div>
-                        
+
                         <div>
-                            <Label class="text-sm font-medium text-zinc-300 mb-2 block">Description</Label>
-                            <Input 
-                                v-model="transactionForm.description" 
-                                type="text" 
-                                class="h-10 bg-black/50 border-zinc-800 text-white focus:border-orange-600/50" 
+                            <Label
+                                class="mb-2 block text-sm font-medium text-zinc-300"
+                                >Description</Label
+                            >
+                            <Input
+                                v-model="transactionForm.description"
+                                type="text"
+                                class="h-10 border-zinc-800 bg-black/50 text-white focus:border-orange-600/50"
                             />
                         </div>
 
-                        <div class="flex justify-end gap-3 pt-4 border-t border-zinc-800">
-                            <Button 
-                                type="button" 
-                                variant="ghost" 
-                                @click="closeEditModal" 
-                                class="text-zinc-400 hover:text-white hover:bg-zinc-900/50"
+                        <div
+                            class="flex justify-end gap-3 border-t border-zinc-800 pt-4"
+                        >
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                @click="closeEditModal"
+                                class="text-zinc-400 hover:bg-zinc-900/50 hover:text-white"
                             >
                                 Cancel
                             </Button>
-                            <Button 
-                                type="submit" 
-                                class="bg-gradient-to-r from-orange-600 to-orange-500 hover:from-orange-700 hover:to-orange-600 text-white w-32"
+                            <Button
+                                type="submit"
+                                class="w-32 bg-gradient-to-r from-orange-600 to-orange-500 text-white hover:from-orange-700 hover:to-orange-600"
                                 :disabled="transactionForm.processing"
                             >
-                                {{ transactionForm.processing ? 'Saving...' : 'Update' }}
+                                {{
+                                    transactionForm.processing
+                                        ? 'Saving...'
+                                        : 'Update'
+                                }}
                             </Button>
                         </div>
                     </form>

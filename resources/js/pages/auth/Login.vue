@@ -83,7 +83,7 @@ const submit = () => {
                         <button
                             type="button"
                             @click="showPassword = !showPassword"
-                            class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                            class="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                             tabindex="-1"
                         >
                             <Eye v-if="!showPassword" class="h-4 w-4" />
@@ -116,7 +116,7 @@ const submit = () => {
 
                 <Button
                     type="submit"
-                    class="mt-4 w-full bg-orange-600 hover:bg-orange-700 text-white font-bold"
+                    class="mt-4 w-full bg-orange-600 font-bold text-white hover:bg-orange-700"
                     :tabindex="4"
                     :disabled="form.processing"
                     data-test="login-button"
@@ -126,9 +126,7 @@ const submit = () => {
                 </Button>
             </div>
 
-            <div
-                class="text-center text-sm text-muted-foreground"
-            >
+            <div class="text-center text-sm text-muted-foreground">
                 Don't have an account?
                 <TextLink href="/register" :tabindex="5">Sign up</TextLink>
             </div>

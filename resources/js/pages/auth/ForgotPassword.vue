@@ -52,7 +52,7 @@ const submit = () => {
 
             <div class="flex items-center justify-start">
                 <Button
-                    class="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold"
+                    class="w-full bg-orange-600 font-bold text-white hover:bg-orange-700"
                     :disabled="form.processing"
                     data-test="email-password-reset-link-button"
                 >
@@ -63,7 +63,9 @@ const submit = () => {
 
             <div class="text-center text-sm text-muted-foreground">
                 Or, return to
-                <TextLink href="/login" class="underline underline-offset-4">log in</TextLink>
+                <TextLink href="/login" class="underline underline-offset-4"
+                    >log in</TextLink
+                >
             </div>
         </form>
     </AuthBase>

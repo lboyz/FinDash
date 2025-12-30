@@ -96,10 +96,10 @@ const showConfirmPassword = ref(false);
                             placeholder="Password"
                             class="pr-10"
                         />
-                         <button
+                        <button
                             type="button"
                             @click="showPassword = !showPassword"
-                            class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                            class="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                             tabindex="-1"
                         >
                             <Eye v-if="!showPassword" class="h-4 w-4" />
@@ -126,7 +126,7 @@ const showConfirmPassword = ref(false);
                         <button
                             type="button"
                             @click="showConfirmPassword = !showConfirmPassword"
-                            class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                            class="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground"
                             tabindex="-1"
                         >
                             <Eye v-if="!showConfirmPassword" class="h-4 w-4" />
@@ -138,7 +138,7 @@ const showConfirmPassword = ref(false);
 
                 <Button
                     type="submit"
-                    class="mt-2 w-full bg-orange-600 hover:bg-orange-700 text-white font-bold"
+                    class="mt-2 w-full bg-orange-600 font-bold text-white hover:bg-orange-700"
                     tabindex="6"
                     :disabled="form.processing"
                     data-test="register-user-button"

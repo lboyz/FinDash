@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { type User } from '@/types';
 import { usePage } from '@inertiajs/vue3';
 import { computed } from 'vue';
-import { type User } from '@/types';
 
 interface Props {
     showEmail?: boolean;
@@ -26,7 +26,11 @@ const getInitials = (name: string) => {
 
 <template>
     <Avatar class="h-8 w-8 overflow-hidden rounded-lg">
-        <AvatarImage v-if="user.profile_image" :src="`/storage/${user.profile_image}`" :alt="user.name" />
+        <AvatarImage
+            v-if="user.profile_image"
+            :src="`/storage/${user.profile_image}`"
+            :alt="user.name"
+        />
         <AvatarFallback class="rounded-lg text-black dark:text-white">
             {{ getInitials(user.name) }}
         </AvatarFallback>

@@ -1,16 +1,11 @@
 <script setup lang="ts">
-import { ref } from 'vue';
-import AppLayout from '@/layouts/AppLayout.vue';
-import { Head, router, useForm } from '@inertiajs/vue3';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { 
-    Plus,
-    Pencil,
-    Trash2,
-    Wallet
-} from 'lucide-vue-next';
+import AppLayout from '@/layouts/AppLayout.vue';
+import { Head, router, useForm } from '@inertiajs/vue3';
+import { Pencil, Plus, Trash2, Wallet } from 'lucide-vue-next';
+import { ref } from 'vue';
 
 interface Platform {
     id: number;
@@ -21,9 +16,7 @@ const props = defineProps<{
     platforms: Platform[];
 }>();
 
-const breadcrumbs = [
-    { title: 'Wallets', href: '/platforms' },
-];
+const breadcrumbs = [{ title: 'Wallets', href: '/platforms' }];
 
 const showModal = ref(false);
 const editingPlatform = ref<Platform | null>(null);
@@ -47,17 +40,21 @@ const openEditModal = (platform: Platform) => {
 const submit = () => {
     if (editingPlatform.value) {
         form.put(`/platforms/${editingPlatform.value.id}`, {
-            onSuccess: () => showModal.value = false,
+            onSuccess: () => (showModal.value = false),
         });
     } else {
         form.post('/platforms', {
-            onSuccess: () => showModal.value = false,
+            onSuccess: () => (showModal.value = false),
         });
     }
 };
 
 const deletePlatform = (id: number) => {
-    if (confirm('Delete this wallet? Transactions associated with it might be affected.')) {
+    if (
+        confirm(
+            'Delete this wallet? Transactions associated with it might be affected.',
+        )
+    ) {
         router.delete(`/platforms/${id}`);
     }
 };
@@ -70,61 +67,111 @@ const deletePlatform = (id: number) => {
         <div class="flex-1 space-y-8 p-8 pt-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <h2 class="text-3xl font-bold tracking-tight text-white/90">Wallets & Platforms</h2>
-                    <p class="text-muted-foreground">Manage your payment methods.</p>
+                    <h2 class="text-3xl font-bold tracking-tight text-white/90">
+                        Wallets & Platforms
+                    </h2>
+                    <p class="text-muted-foreground">
+                        Manage your payment methods.
+                    </p>
                 </div>
-                <Button class="bg-orange-600 hover:bg-orange-700 text-white" @click="openAddModal">
+                <Button
+                    class="bg-orange-600 text-white hover:bg-orange-700"
+                    @click="openAddModal"
+                >
                     <Plus class="mr-2 h-4 w-4" /> Add Wallet
                 </Button>
             </div>
 
             <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                <div v-for="platform in platforms" :key="platform.id" 
-                    class="group relative overflow-hidden rounded-xl border border-zinc-800 bg-black p-6 transition-all hover:border-zinc-700 hover:shadow-md flex flex-col justify-between h-32"
+                <div
+                    v-for="platform in platforms"
+                    :key="platform.id"
+                    class="group relative flex h-32 flex-col justify-between overflow-hidden rounded-xl border border-zinc-800 bg-black p-6 transition-all hover:border-zinc-700 hover:shadow-md"
                 >
-                    <div class="flex justify-between items-start">
-                        <div class="h-10 w-10 rounded-full flex items-center justify-center bg-zinc-900 border border-zinc-800 text-blue-500">
+                    <div class="flex items-start justify-between">
+                        <div
+                            class="flex h-10 w-10 items-center justify-center rounded-full border border-zinc-800 bg-zinc-900 text-blue-500"
+                        >
                             <Wallet class="h-5 w-5" />
                         </div>
-                        <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Button @click="openEditModal(platform)" size="icon" variant="ghost" class="h-8 w-8 text-zinc-400 hover:text-white hover:bg-zinc-800">
+                        <div
+                            class="flex gap-1 opacity-0 transition-opacity group-hover:opacity-100"
+                        >
+                            <Button
+                                @click="openEditModal(platform)"
+                                size="icon"
+                                variant="ghost"
+                                class="h-8 w-8 text-zinc-400 hover:bg-zinc-800 hover:text-white"
+                            >
                                 <Pencil class="h-4 w-4" />
                             </Button>
-                            <Button @click="deletePlatform(platform.id)" size="icon" variant="ghost" class="h-8 w-8 text-zinc-400 hover:text-red-500 hover:bg-red-500/10">
+                            <Button
+                                @click="deletePlatform(platform.id)"
+                                size="icon"
+                                variant="ghost"
+                                class="h-8 w-8 text-zinc-400 hover:bg-red-500/10 hover:text-red-500"
+                            >
                                 <Trash2 class="h-4 w-4" />
                             </Button>
                         </div>
                     </div>
                     <div>
-                        <h3 class="font-bold text-white text-lg tracking-tight">{{ platform.name }}</h3>
+                        <h3 class="text-lg font-bold tracking-tight text-white">
+                            {{ platform.name }}
+                        </h3>
                         <p class="text-xs text-zinc-500">Payment Method</p>
                     </div>
-                    
+
                     <!-- Decor -->
-                     <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-gradient-to-br from-zinc-800 to-transparent opacity-10 rounded-full blur-2xl pointer-events-none"></div>
+                    <div
+                        class="pointer-events-none absolute -right-4 -bottom-4 h-24 w-24 rounded-full bg-gradient-to-br from-zinc-800 to-transparent opacity-10 blur-2xl"
+                    ></div>
                 </div>
             </div>
         </div>
 
         <!-- Modal -->
-        <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
-             <div class="fixed inset-0 bg-black/80 backdrop-blur-sm" @click="showModal = false"></div>
-             <div class="relative z-50 w-full max-w-md bg-zinc-950 border border-zinc-800 p-6 rounded-xl shadow-2xl">
-                <h3 class="text-lg font-semibold text-white mb-4">
+        <div
+            v-if="showModal"
+            class="fixed inset-0 z-50 flex items-center justify-center p-4"
+        >
+            <div
+                class="fixed inset-0 bg-black/80 backdrop-blur-sm"
+                @click="showModal = false"
+            ></div>
+            <div
+                class="relative z-50 w-full max-w-md rounded-xl border border-zinc-800 bg-zinc-950 p-6 shadow-2xl"
+            >
+                <h3 class="mb-4 text-lg font-semibold text-white">
                     {{ editingPlatform ? 'Edit Wallet' : 'New Wallet' }}
                 </h3>
                 <form @submit.prevent="submit" class="space-y-4">
                     <div>
                         <Label class="text-zinc-400">Name</Label>
-                        <Input v-model="form.name" class="bg-black border-zinc-800 text-white" placeholder="e.g. BCA, GoPay, Cash" required />
+                        <Input
+                            v-model="form.name"
+                            class="border-zinc-800 bg-black text-white"
+                            placeholder="e.g. BCA, GoPay, Cash"
+                            required
+                        />
                     </div>
-                    <div class="flex justify-end gap-2 mt-6">
-                        <Button type="button" variant="ghost" @click="showModal = false" class="text-zinc-400 hover:text-white">Cancel</Button>
-                        <Button type="submit" class="bg-orange-600 hover:bg-orange-700 text-white" :disabled="form.processing">Save</Button>
+                    <div class="mt-6 flex justify-end gap-2">
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            @click="showModal = false"
+                            class="text-zinc-400 hover:text-white"
+                            >Cancel</Button
+                        >
+                        <Button
+                            type="submit"
+                            class="bg-orange-600 text-white hover:bg-orange-700"
+                            :disabled="form.processing"
+                            >Save</Button
+                        >
                     </div>
                 </form>
-             </div>
+            </div>
         </div>
-
     </AppLayout>
 </template>
