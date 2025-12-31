@@ -1,37 +1,39 @@
 # =========================
-# 1) Frontend build stage
+# 1) Build stage (PHP + Node)
 # =========================
-FROM node:20-alpine AS frontend-build
+FROM php:8.2-cli AS build
 WORKDIR /app
 
-# Install php-cli + composer requirements (alpine)
-RUN apk add --no-cache \
-  php82 php82-phar php82-mbstring php82-ctype php82-openssl php82-json php82-tokenizer php82-xml php82-xmlwriter php82-dom php82-simplexml php82-session \
-  curl git unzip
+# System deps
+RUN apt-get update && apt-get install -y \
+    git unzip curl libzip-dev \
+ && docker-php-ext-install zip \
+ && rm -rf /var/lib/apt/lists/*
 
-# (opsional) bikin alias php -> php82 kalau perlu
-RUN ln -sf /usr/bin/php82 /usr/bin/php
+# Install Node.js 20
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+ && apt-get install -y nodejs
 
-# Install composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Cache dependencies: copy composer files dulu
+# Install PHP deps
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --prefer-dist --no-interaction --no-progress
 
-# Cache node deps: copy package files dulu
+# Install Node deps
 COPY package*.json ./
 RUN npm ci
 
-# Copy source setelah deps (biar cache maksimal)
+# Copy source
 COPY . .
 
-# Build assets (ini sekarang aman karena vendor/autoload.php sudah ada)
+# Build frontend (Wayfinder aman karena vendor sudah ada)
 RUN npm run build
 
 
 # =========================
-# 2) PHP runtime stage
+# 2) Runtime stage
 # =========================
 FROM php:8.2-apache
 WORKDIR /var/www/html
@@ -42,23 +44,20 @@ RUN apt-get update && apt-get install -y \
  && a2enmod rewrite \
  && rm -rf /var/lib/apt/lists/*
 
-# Arahkan Apache ke public
+# Apache → public
 RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
 
-# Copy aplikasi
+# App files
 COPY . .
 
-# Copy vendor hasil composer dari build stage (biar tidak perlu composer install di runtime)
-COPY --from=frontend-build /app/vendor /var/www/html/vendor
+# Vendor & build assets dari build stage
+COPY --from=build /app/vendor /var/www/html/vendor
+COPY --from=build /app/public/build /var/www/html/public/build
 
-# Copy hasil build vite
-COPY --from=frontend-build /app/public/build /var/www/html/public/build
-
-# Permissions Laravel
+# Permissions
 RUN chown -R www-data:www-data storage bootstrap/cache
 
-# Start script
+# Start
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
-
 CMD ["/start.sh"]
