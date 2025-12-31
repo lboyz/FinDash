@@ -19,4 +19,9 @@ php artisan config:cache || true
 php artisan route:cache || true
 php artisan view:cache || true
 
+# Optional migrations (set RUN_MIGRATIONS=true)
+if [ "${RUN_MIGRATIONS:-false}" = "true" ]; then
+    php artisan migrate --force || true
+fi
+
 exec apache2-foreground

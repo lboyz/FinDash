@@ -17,9 +17,9 @@ RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# Install PHP deps
+# Install PHP deps (no scripts yet, app source not copied)
 COPY composer.json composer.lock ./
-RUN composer install --no-dev --prefer-dist --no-interaction --no-progress
+RUN composer install --no-dev --prefer-dist --no-interaction --no-progress --no-scripts
 
 # Install Node deps
 COPY package*.json ./
@@ -28,7 +28,11 @@ RUN npm ci
 # Copy source
 COPY . .
 
-# Build frontend (Wayfinder aman karena vendor sudah ada)
+# Build frontend (Wayfinder needs artisan + vendor)
+ENV APP_ENV=production \
+    APP_DEBUG=false \
+    APP_KEY=base64:ggJNVnYQ4J6ZQz5G75nqu6A8NyQkJ7vFf7FQ1J2AxQk=
+RUN php artisan package:discover --ansi
 RUN npm run build
 
 
@@ -44,7 +48,7 @@ RUN apt-get update && apt-get install -y \
  && a2enmod rewrite \
  && rm -rf /var/lib/apt/lists/*
 
-# Apache → public
+# Apache -> public
 RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
 
 # App files
