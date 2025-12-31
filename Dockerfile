@@ -3,8 +3,8 @@
 # ======================
 FROM node:20-alpine AS frontend
 WORKDIR /app
-COPY package*.json ./
-RUN npm install
+COPY package.json package-lock.json ./
+RUN npm ci --no-audit --no-fund
 COPY . .
 RUN npm run build
 
@@ -33,13 +33,14 @@ RUN sed -i 's!/var/www/html!/var/www/html/public!g' \
     /etc/apache2/sites-available/000-default.conf
 
 # Install PHP deps
-RUN composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader --no-interaction --no-progress
 
 # Permissions
 RUN chown -R www-data:www-data storage bootstrap/cache
 
 # Start script
 COPY start.sh /start.sh
+RUN sed -i 's/\r$//' /start.sh
 RUN chmod +x /start.sh
 
 CMD ["/start.sh"]
