@@ -30,8 +30,7 @@ COPY . .
 
 # Build frontend (Wayfinder needs artisan + vendor)
 ENV APP_ENV=production \
-    APP_DEBUG=false \
-    APP_KEY=base64:ggJNVnYQ4J6ZQz5G75nqu6A8NyQkJ7vFf7FQ1J2AxQk=
+    APP_DEBUG=false
 RUN php artisan package:discover --ansi
 RUN npm run build
 

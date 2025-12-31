@@ -19,7 +19,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        if (\Illuminate\Support\Str::contains(request()->getHost(), 'ngrok-free.dev')) {
+        $appUrl = config('app.url');
+        if ($appUrl && \Illuminate\Support\Str::startsWith($appUrl, 'https://')) {
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
 
