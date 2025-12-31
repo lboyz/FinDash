@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\Platform;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Carbon\Carbon;
 
@@ -197,9 +198,13 @@ class DashboardController extends Controller
      */
     private function getAvailableMonths(int $userId): array
     {
+        $driver = DB::getDriverName();
+        $yearExpr = $driver === 'pgsql' ? 'EXTRACT(YEAR FROM date)::int' : 'YEAR(date)';
+        $monthExpr = $driver === 'pgsql' ? 'EXTRACT(MONTH FROM date)::int' : 'MONTH(date)';
+
         $months = Transaction::where('user_id', $userId)
-            ->selectRaw('YEAR(date) as year, MONTH(date) as month, COUNT(*) as transaction_count')
-            ->groupBy('year', 'month')
+            ->selectRaw($yearExpr . ' as year, ' . $monthExpr . ' as month, COUNT(*) as transaction_count')
+            ->groupByRaw($yearExpr . ', ' . $monthExpr)
             ->orderBy('year', 'desc')
             ->orderBy('month', 'desc')
             ->limit(12)
