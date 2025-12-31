@@ -153,7 +153,7 @@ class ExportController extends Controller
         $query = $filterResult['query'];
         $dateRange = $filterResult['dateRange'];
         
-        $transactions = $query->orderBy('date', 'desc')->get();
+        $transactions = $query->orderBy('date', 'asc')->orderBy('created_at', 'asc')->get();
 
         // Generate CSV content
         $csvContent = $this->generateCsvContent($transactions);
@@ -200,7 +200,7 @@ class ExportController extends Controller
         $query = $filterResult['query'];
         $dateRange = $filterResult['dateRange'];
         
-        $transactions = $query->orderBy('date', 'desc')->get();
+        $transactions = $query->orderBy('date', 'asc')->orderBy('created_at', 'asc')->get();
 
         // Calculate totals
         $totalIncome = $transactions->where('category', 'income')->sum('amount');
@@ -225,7 +225,8 @@ class ExportController extends Controller
         $filterResult = $this->getFilteredQuery($request);
         $query = $filterResult['query'];
         
-        $transactions = $query->orderBy('date', 'desc')
+        $transactions = $query->orderBy('date', 'asc')
+            ->orderBy('created_at', 'asc')
             ->get()
             ->map(function ($transaction) {
                 return [

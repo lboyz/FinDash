@@ -363,20 +363,16 @@ class DashboardController extends Controller
      */
     private function getPlatformUsage(int $userId, Carbon $startDate, Carbon $endDate): array
     {
-        // PERBAIKAN: Pastikan hanya data dalam range
-        $platforms = Platform::withCount(['transactions' => function ($query) use ($userId, $startDate, $endDate) {
-            $query->where('user_id', $userId)
-                ->where('category', 'expense')
-                ->whereBetween('date', [$startDate, $endDate]); // PERBAIKAN: Tambah whereBetween
-        }])
-        ->withSum(['transactions' => function ($query) use ($userId, $startDate, $endDate) {
-            $query->where('user_id', $userId)
-                ->where('category', 'expense')
-                ->whereBetween('date', [$startDate, $endDate]); // PERBAIKAN: Tambah whereBetween
-        }], 'amount')
-        ->orderByDesc('transactions_sum_amount')
-        ->limit(6)
-        ->get();
+        $platforms = Transaction::query()
+            ->join('platforms', 'platforms.id', '=', 'transactions.platform_id')
+            ->where('transactions.user_id', $userId)
+            ->where('transactions.category', 'expense')
+            ->whereBetween('transactions.date', [$startDate, $endDate])
+            ->selectRaw('platforms.id as platform_id, platforms.name as name, SUM(transactions.amount) as total_amount, COUNT(*) as transaction_count')
+            ->groupBy('platforms.id', 'platforms.name')
+            ->orderByDesc('total_amount')
+            ->limit(6)
+            ->get();
 
         // PERBAIKAN: Hitung total expense dalam range yang sama
         $totalExpense = Transaction::where('user_id', $userId)
@@ -418,15 +414,16 @@ class DashboardController extends Controller
 
         $usageData = [];
         foreach ($platforms as $platform) {
-            if ($platform->transactions_count > 0) {
+            if ($platform->transaction_count > 0) {
+                $totalAmount = (float) $platform->total_amount;
                 $expensePercentage = $totalExpense > 0 
-                    ? round(($platform->transactions_sum_amount / $totalExpense) * 100, 1)
+                    ? round(($totalAmount / $totalExpense) * 100, 1)
                     : 0;
                 
                 $usageData[] = [
                     'name' => $platform->name,
-                    'amount' => (float) $platform->transactions_sum_amount,
-                    'transaction_count' => $platform->transactions_count,
+                    'amount' => $totalAmount,
+                    'transaction_count' => $platform->transaction_count,
                     'icon' => $platformIcons[$platform->name] ?? 'CreditCard',
                     'color' => $platformColors[$platform->name] ?? '#6b7280',
                     'expense_percentage' => $expensePercentage,
