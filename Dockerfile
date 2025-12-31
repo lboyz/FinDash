@@ -15,3 +15,9 @@ RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available
 
 RUN composer install --no-dev --optimize-autoloader || true
 RUN chown -R www-data:www-data storage bootstrap/cache
+
+# Tambah start script
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
+CMD ["/start.sh"]
