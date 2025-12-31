@@ -2,6 +2,7 @@ FROM node:20-alpine AS frontend-build
 
 WORKDIR /app
 COPY package*.json ./
+RUN apk add --no-cache php
 RUN npm ci
 COPY . .
 RUN npm run build
