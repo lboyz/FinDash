@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->date('date');
-            $table->enum('category', ['income', 'expense']);
+            $table->string('category');
             $table->foreignId('platform_id')->constrained()->onDelete('restrict');
             $table->string('type'); // QRIS, Transfer, Tunai, etc.
             $table->text('description')->nullable();

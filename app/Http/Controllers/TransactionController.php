@@ -15,18 +15,49 @@ use Carbon\Carbon;
 class TransactionController extends Controller
 {
     /**
-     * Get enum values from database column
+     * Static transaction types for PostgreSQL (no enum at DB layer).
      */
-    private function getEnumValues($table, $column)
+    private function getTransactionTypeOptions(): array
     {
-        $type = \Illuminate\Support\Facades\DB::select("SHOW COLUMNS FROM {$table} WHERE Field = '{$column}'")[0]->Type;
-        preg_match('/^enum\((.*)\)$/', $type, $matches);
-        $enum = array();
-        foreach(explode(',', $matches[1]) as $value){
-            $v = trim($value, "'");
-            $enum[] = $v;
-        }
-        return $enum;
+        return [
+            'income' => [
+                'Salary',
+                'Bonus',
+                'Freelance',
+                'Investment',
+                'Other Income',
+            ],
+            'expense' => [
+                'Dining Out',
+                'Food',
+                'Groceries',
+                'Transport',
+                'Rent',
+                'Bills',
+                'Healthcare',
+                'Shopping',
+                'Entertainment',
+                'Education',
+                'Subscriptions',
+                'Personal Care',
+                'Gifts',
+                'Donation',
+                'Top-Up',
+                'Travel',
+                'Transfer',
+                'Other',
+            ],
+        ];
+    }
+
+    private function getAllTransactionTypes(): array
+    {
+        $options = $this->getTransactionTypeOptions();
+
+        return array_values(array_unique(array_merge(
+            $options['income'],
+            $options['expense']
+        )));
     }
 
     /**
@@ -110,28 +141,7 @@ class TransactionController extends Controller
             ->values()
             ->toArray();
 
-        // Get available types from DB Enum
-        $allTypes = $this->getEnumValues('transactions', 'type');
-        
-        // Define known income types to categorize
-        $knownIncomeTypes = ['Salary', 'Bonus', 'Freelance', 'Investment', 'Other Income']; // Add more if needed
-        
-        $transactionTypes = [
-            'income' => [],
-            'expense' => [],
-        ];
-
-        foreach ($allTypes as $type) {
-            if (in_array($type, $knownIncomeTypes)) {
-                $transactionTypes['income'][] = $type;
-            } else {
-                $transactionTypes['expense'][] = $type;
-            }
-        }
-        
-        // Ensure arrays are simple, indexed arrays
-        $transactionTypes['income'] = array_values($transactionTypes['income']);
-        $transactionTypes['expense'] = array_values($transactionTypes['expense']);
+        $transactionTypes = $this->getTransactionTypeOptions();
 
         return Inertia::render('Transactions/Index', [
             'transactions' => $transactions,
@@ -155,7 +165,7 @@ class TransactionController extends Controller
      */
     public function store(Request $request)
     {
-        $allTypes = $this->getEnumValues('transactions', 'type');
+        $allTypes = $this->getAllTransactionTypes();
 
         $rules = [
             'date' => ['required', 'date'],
@@ -204,7 +214,7 @@ class TransactionController extends Controller
             abort(403);
         }
 
-        $allTypes = $this->getEnumValues('transactions', 'type');
+        $allTypes = $this->getAllTransactionTypes();
 
         $rules = [
             'date' => ['required', 'date'],
