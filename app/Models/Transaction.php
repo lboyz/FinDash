@@ -87,7 +87,9 @@ class Transaction extends Model
      */
     public function scopeSearchDescription($query, $search)
     {
-        return $query->where('description', 'like', '%' . $search . '%');
+        $searchValue = strtolower($search);
+
+        return $query->whereRaw('LOWER(description) LIKE ?', ['%' . $searchValue . '%']);
     }
 
     /**

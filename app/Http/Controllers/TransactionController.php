@@ -109,8 +109,9 @@ class TransactionController extends Controller
                         $listQuery->where('type', $value);
                         break;
                     case 'description':
-                        $totalQuery->where('description', 'like', '%' . $value . '%');
-                        $listQuery->where('description', 'like', '%' . $value . '%');
+                        $searchValue = strtolower($value);
+                        $totalQuery->whereRaw('LOWER(description) LIKE ?', ['%' . $searchValue . '%']);
+                        $listQuery->whereRaw('LOWER(description) LIKE ?', ['%' . $searchValue . '%']);
                         break;
                 }
             }
